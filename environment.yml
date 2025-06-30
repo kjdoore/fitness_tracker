@@ -1,0 +1,6 @@
+name: fitness_tracker
+channels:
+  - conda-forge
+dependencies:
+  - streamlit
+  - duckdb
