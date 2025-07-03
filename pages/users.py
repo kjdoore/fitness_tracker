@@ -6,12 +6,6 @@ st.set_page_config(page_icon="🏋️")
 
 # Connect to database
 conn = duckdb.connect("fitness_data.ddb")
-# Create table if it doesn't exist
-conn.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY
-    )
-""")
 
 # Initialize session state
 if "submitted" not in st.session_state:

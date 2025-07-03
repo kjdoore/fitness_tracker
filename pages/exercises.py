@@ -6,13 +6,6 @@ st.set_page_config(page_icon="🏋️")
 
 # Connect to DuckDB (creates file if it doesn't exist)
 conn = duckdb.connect("fitness_data.ddb")
-# Create table if it doesn't exist
-conn.execute("""
-    CREATE TABLE IF NOT EXISTS exercises (
-        muscle_group TEXT,
-        exercise TEXT
-    )
-""")
 
 # Read in premade list of muscle groups
 with open("muscle_groups.txt", "r") as file:
