@@ -20,6 +20,8 @@ conn.execute("""
         set INTEGER,
         rpe INTEGER,
         super_set INTEGER,
+        rep_range_min INTEGER,
+        rep_range_max INTEGER
     )
 """)
 conn.execute("""
@@ -66,25 +68,31 @@ else:
     st.selectbox("Select exercise", ["No Exercises in System"], index=0, disabled=True)
     exercise = None
 
+rep_range_column = st.columns(2)
+with rep_range_column[0]:
+    rep_range_min = st.number_input("Rep Range Min", min_value=1)
+with rep_range_column[1]:
+    rep_range_max = st.number_input("Rep Range Max", min_value=rep_range_min)
+
 set_num = st.number_input("Set", min_value=1)
-column2 = st.columns(2)
-with column2[0]:
+super_set_column = st.columns(2)
+with super_set_column[0]:
     super_set = st.checkbox("Super Set")
-with column2[1]:
+with super_set_column[1]:
     # We only want a super set value if it is a super set
     if super_set:
         super_set_num = st.number_input("Super Set", min_value=1)
     else:
         super_set_num = None
 
-column3 = st.columns(3)
-with column3[0]:
+lift_info_column = st.columns(3)
+with lift_info_column[0]:
     # Do weight steps in 5 lb intervals. Can still type any integer,
     # but make the +/- buttons go in increments of 5.
     weight = st.number_input("Weight (lbs)", min_value=0, step=5)
-with column3[1]:
+with lift_info_column[1]:
     reps = st.number_input("Reps", min_value=1)
-with column3[2]:
+with lift_info_column[2]:
     rpe = st.number_input("RPE", min_value=1, max_value=10)
 
 
@@ -109,6 +117,8 @@ with st.form("entry_form", border=False):
             'set_num': set_num,
             'rpe': rpe,
             'super_set_num': super_set_num,
+            'rep_range_min': rep_range_min,
+            'rep_range_max': rep_range_max,
         }
 
 # Run logic after form submission
@@ -127,12 +137,13 @@ if st.session_state.get("submitted"):
 
     if not exists and data['username'] and data['exercise']:
         conn.execute(f"""
-            INSERT INTO fitness_data (username, date, exercise, weight, reps, set, rpe, super_set)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO fitness_data (username, date, exercise, weight, reps, set, rpe, super_set, rep_range_min, rep_range_max)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             [data['username'], data['date'], data['exercise'],
              data['weight'], data['reps'], data['set_num'],
-             data['rpe'], data['super_set_num']]
+             data['rpe'], data['super_set_num'],
+             data['rep_range_min'], data['rep_range_max']]
         )
         st.success("Entry added!")
     elif exists:
@@ -158,12 +169,13 @@ if st.session_state.needs_confirmation:
             AND set = {data['set_num']}
         """)
         conn.execute(f"""
-            INSERT INTO fitness_data (username, date, exercise, weight, reps, set, rpe, super_set)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO fitness_data (username, date, exercise, weight, reps, set, rpe, super_set, rep_range_min, rep_range_max)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             [data['username'], data['date'], data['exercise'],
              data['weight'], data['reps'], data['set_num'],
-             data['rpe'], data['super_set_num']]
+             data['rpe'], data['super_set_num'],
+             data['rep_range_min'], data['rep_range_max']]
         )
         st.success("Entry overridden successfully.")
 
