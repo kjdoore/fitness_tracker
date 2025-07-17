@@ -47,6 +47,7 @@ if st.session_state.get("submitted"):
         AND date = DATE '{data['date']}'
         """
     ).fetchdf()
+    workout = workout.sort_values(['set', 'super_set'], na_position='first')
 
     # Check the max number of sets performed
     max_sets = workout['set'].max()
@@ -61,7 +62,7 @@ if st.session_state.get("submitted"):
         table = f"| Exercise | Rep Range | Super Set | {' | '.join([f'Set {i}' for i in range(1, workout['set'].max() + 1)])} |\n"
         table += f"| -------- | --------- | --------- | {' | '.join([f'-----' for i in range(1, workout['set'].max() + 1)])} |\n"
 
-        for exercise, set_info in workout.groupby('exercise'):
+        for exercise, set_info in workout.groupby('exercise', sort=False):
             temp = f"| {exercise} "
             temp += f"| {set_info['rep_range_min'].unique()[0]}-{set_info['rep_range_max'].unique()[0]} "
             temp += f"| {'' if isinstance(set_info['super_set'].unique()[0], NAType) else set_info['super_set'].unique()[0]} "
